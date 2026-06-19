@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const db = require('./config/db');
 const authRoutes = require('./modules/auth/auth.routes');
 const projectsRoutes = require('./modules/projects/projects.routes');
-
+const issuesRoutes = require('./modules/issues/issues.routes');
 dotenv.config();
 
 const app = express();
@@ -19,6 +19,7 @@ db.raw('SELECT 1')
 
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectsRoutes);
+app.use('/api/issues', issuesRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'SprintBoard API is running 🚀' });

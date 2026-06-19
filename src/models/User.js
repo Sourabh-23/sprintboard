@@ -20,6 +20,12 @@ class User extends BaseModel {
     };
   }
 
+  $formatJson(json) {
+    json = super.$formatJson(json);
+    delete json.password;
+    return json;
+  }
+
   static get relationMappings() {
     const Organization = require('./Organization');
 
