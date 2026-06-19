@@ -5,6 +5,16 @@ const db = require('./config/db');
 const authRoutes = require('./modules/auth/auth.routes');
 const projectsRoutes = require('./modules/projects/projects.routes');
 const issuesRoutes = require('./modules/issues/issues.routes');
+const sprintsRoutes = require('./modules/sprints/sprints.routes');
+const commentsRoutes = require('./modules/comments/comments.routes');
+
+
+
+
+
+
+
+
 dotenv.config();
 
 const app = express();
@@ -20,7 +30,8 @@ db.raw('SELECT 1')
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectsRoutes);
 app.use('/api/issues', issuesRoutes);
-
+app.use('/api/sprints', sprintsRoutes);
+app.use('/api/comments', commentsRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'SprintBoard API is running 🚀' });
 });
