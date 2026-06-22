@@ -5,6 +5,10 @@ SprintBoard is a Jira-style sprint and task management app with an Express/Postg
 ## Features
 
 - Register and login with JWT
+- Refresh token endpoint for renewing access tokens
+- CORS, Helmet, HPP, rate limiting, input sanitization, and Winston logging
+- Nodemailer email notifications in free local mode
+- SSE event stream for live issue/comment updates
 - Organization-scoped projects
 - Issues with status, priority, type, assignee, and comments
 - Sprints with start/complete workflow
@@ -46,10 +50,17 @@ Health:
 GET /api/health
 ```
 
+Events:
+
+```text
+GET /api/events
+```
+
 ## Main APIs
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
+- `POST /api/auth/refresh`
 - `GET /api/users`
 - `POST /api/users`
 - `PATCH /api/users/:id/role`
@@ -76,3 +87,16 @@ GET /api/health
 - `POST /api/comments`
 - `GET /api/comments?issue_id=1`
 - `DELETE /api/comments/:id`
+
+## Optional Email Config
+
+Without SMTP variables, emails are generated and logged locally for free. To send real emails, add:
+
+```env
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_user
+SMTP_PASS=your_password
+MAIL_FROM="SprintBoard <no-reply@example.com>"
+```

@@ -1,5 +1,6 @@
 const Comment = require('../../models/Comment');
 const Issue = require('../../models/Issue');
+const { publishToOrganization } = require('../events/events.service');
 
 const createComment = async ({ issue_id, user_id, organization_id, content }) => {
   // Issue exist karta hai is org mein?
@@ -9,6 +10,12 @@ const createComment = async ({ issue_id, user_id, organization_id, content }) =>
   const comment = await Comment.query()
     .insert({ issue_id, user_id, content })
     .returning('*');
+
+  publishToOrganization(organization_id, 'comment.created', {
+    id: comment.id,
+    issue_id: comment.issue_id,
+    user_id: comment.user_id,
+  });
 
   return comment;
 };

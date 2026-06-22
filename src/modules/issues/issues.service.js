@@ -2,6 +2,9 @@ const Issue = require('../../models/Issue');
 const Project = require('../../models/Project');
 const Sprint = require('../../models/Sprint');
 const User = require('../../models/User');
+const logger = require('../../utils/logger');
+const { sendIssueAssignedEmail } = require('../../utils/mailer');
+const { publishToOrganization } = require('../events/events.service');
 
 const TYPES = ['bug', 'story', 'task'];
 const STATUSES = ['todo', 'in_progress', 'done'];
@@ -19,10 +22,11 @@ const getProject = async (organization_id, project_id) => {
   return project;
 };
 
-const assertAssignee = async (organization_id, assignee_id) => {
-  if (!assignee_id) return;
+const getAssignee = async (organization_id, assignee_id) => {
+  if (!assignee_id) return null;
   const user = await User.query().where({ id: assignee_id, organization_id }).first();
   if (!user) throw new Error('Assignee not found');
+  return user;
 };
 
 const createIssue = async ({ organization_id, project_id, sprint_id, title, description, type, priority, assignee_id, created_by }) => {
@@ -30,7 +34,7 @@ const createIssue = async ({ organization_id, project_id, sprint_id, title, desc
   assertEnum(priority, PRIORITIES, 'priority');
 
   const project = await getProject(organization_id, project_id);
-  await assertAssignee(organization_id, assignee_id);
+  const assignee = await getAssignee(organization_id, assignee_id);
 
   if (sprint_id) {
     const sprint = await Sprint.query().where({ id: sprint_id, project_id }).first();
@@ -51,6 +55,21 @@ const createIssue = async ({ organization_id, project_id, sprint_id, title, desc
   });
 
   if (sprint_id) await Sprint.relatedQuery('issues').for(sprint_id).relate(issue.id);
+  if (assignee) {
+    sendIssueAssignedEmail({
+      to: assignee.email,
+      assigneeName: assignee.name,
+      issueTitle: issue.title,
+    }).catch((error) => logger.error('Failed to send issue assignment email', error));
+  }
+
+  publishToOrganization(organization_id, 'issue.created', {
+    id: issue.id,
+    title: issue.title,
+    project_id: issue.project_id,
+    status: issue.status,
+  });
+
   return { ...issue, issue_key: buildIssueKey(issue, project) };
 };
 
@@ -91,7 +110,7 @@ const updateIssue = async ({ organization_id, id, updates }) => {
   assertEnum(updates.status, STATUSES, 'status');
   assertEnum(updates.priority, PRIORITIES, 'priority');
   assertEnum(updates.type, TYPES, 'type');
-  await assertAssignee(organization_id, updates.assignee_id);
+  const assignee = await getAssignee(organization_id, updates.assignee_id);
 
   const allowedFields = ['title', 'description', 'status', 'priority', 'type', 'assignee_id'];
   const filteredUpdates = {};
@@ -99,13 +118,34 @@ const updateIssue = async ({ organization_id, id, updates }) => {
     if (updates[key] !== undefined) filteredUpdates[key] = key === 'title' ? String(updates[key]).trim() : updates[key];
   }
 
-  return Issue.query().patchAndFetchById(id, filteredUpdates);
+  const updated = await Issue.query().patchAndFetchById(id, filteredUpdates);
+
+  if (assignee && updates.assignee_id !== issue.assignee_id) {
+    sendIssueAssignedEmail({
+      to: assignee.email,
+      assigneeName: assignee.name,
+      issueTitle: updated.title,
+    }).catch((error) => logger.error('Failed to send issue assignment email', error));
+  }
+
+  publishToOrganization(organization_id, 'issue.updated', {
+    id: updated.id,
+    title: updated.title,
+    project_id: updated.project_id,
+    status: updated.status,
+  });
+
+  return updated;
 };
 
 const deleteIssue = async (organization_id, id) => {
   const issue = await Issue.query().where({ organization_id, id }).first();
   if (!issue) throw new Error('Issue not found');
   await Issue.query().deleteById(issue.id);
+  publishToOrganization(organization_id, 'issue.deleted', {
+    id: issue.id,
+    project_id: issue.project_id,
+  });
   return { message: 'Issue deleted successfully' };
 };
 
