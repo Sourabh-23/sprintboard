@@ -10,7 +10,7 @@ exports.up = function(knex) {
     table.foreign('created_by').references('id').inTable('users');
     table.timestamps(true, true);
 
-    table.unique(['organization_id', 'key']); // same org mein key unique honi chahiye
+      // same org mein key unique honi chahiye
   });
 };
 

@@ -1,6 +1,6 @@
 # SprintBoard
 
-SprintBoard is a Jira-style sprint and task management app with an Express/PostgreSQL backend and a simple frontend served by the same server.
+SprintBoard is a Jira-style sprint and task management API built with Express and PostgreSQL.
 
 ## Features
 
@@ -36,12 +36,6 @@ Install and run:
 npm install
 npm run migrate
 npm run dev
-```
-
-Open:
-
-```text
-http://localhost:4000
 ```
 
 Health:

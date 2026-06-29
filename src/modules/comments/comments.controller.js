@@ -1,13 +1,18 @@
 const { createComment, getComments, deleteComment } = require('./comments.service');
 
+const isPositiveInteger = (value) => Number.isInteger(Number(value)) && Number(value) > 0;
+
 const create = async (req, res) => {
   try {
     const { issue_id, content } = req.body;
     if (!issue_id || !content) {
       return res.status(400).json({ message: 'issue_id and content are required' });
     }
+    if (!isPositiveInteger(issue_id)) {
+      return res.status(400).json({ message: 'issue_id must be a positive integer' });
+    }
     const comment = await createComment({
-      issue_id,
+      issue_id: Number(issue_id),
       user_id: req.user.id,
       organization_id: req.user.organization_id,
       content,
@@ -27,8 +32,11 @@ const getAll = async (req, res) => {
     if (!issue_id) {
       return res.status(400).json({ message: 'issue_id is required' });
     }
+    if (!isPositiveInteger(issue_id)) {
+      return res.status(400).json({ message: 'issue_id must be a positive integer' });
+    }
     const comments = await getComments({
-      issue_id,
+      issue_id: Number(issue_id),
       organization_id: req.user.organization_id,
     });
     res.status(200).json({ comments });
