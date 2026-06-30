@@ -5,7 +5,7 @@ Project structure:
 ```text
 sprintboard/
   sprintboard_BE/
-  sprintboard_FE/
+  sprintboard-fe/
 ```
 
 Backend:
@@ -16,4 +16,4 @@ npm install
 npm run dev
 ```
 
-Frontend will be built inside `sprintboard_FE`.
+Frontend is built inside `sprintboard-fe`.
