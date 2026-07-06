@@ -11,7 +11,7 @@ sprintboard/
 
 ## First-time setup
 
-From the project root:
+From the project root (`e:\2026\New folder\sprintboard`):
 
 ```bash
 npm run setup
@@ -23,17 +23,13 @@ npm run setup
 npm start
 ```
 
-This starts both applications:
+That runs both:
 
-- Frontend: http://localhost:3000
-- Backend: http://localhost:4000
-- Health API: http://localhost:4000/api/health
+- Frontend at `http://localhost:3000`
+- Backend at `http://localhost:4000`
 
-Press `Ctrl+C` to stop both applications.
+If you need to start just one side:
 
-To run either application separately:
+- Backend only: `npm run dev:be`
+- Frontend only: `npm run dev:fe`
 
-```bash
-npm run dev:be
-npm run dev:fe
-```
