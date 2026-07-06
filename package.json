@@ -6,6 +6,7 @@
   "scripts": {
     "setup": "npm install --prefix sprintboard_BE && npm install --prefix sprintboard-fe",
     "dev": "concurrently --kill-others-on-fail --names BE,FE --prefix-colors cyan,green \"npm run dev:be\" \"npm run dev:fe\"",
+    "start": "npm run dev",
     "dev:be": "npm run dev --prefix sprintboard_BE",
     "dev:fe": "npm start --prefix sprintboard-fe",
     "build": "npm run build --prefix sprintboard-fe",
@@ -13,8 +14,5 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.3"
-  },
-  "devDependencies": {
-    "concurrently": "^9.2.1"
   }
 }

@@ -20,7 +20,7 @@ npm run setup
 ## Run the complete project
 
 ```bash
-npm run dev
+npm start
 ```
 
 This starts both applications:
