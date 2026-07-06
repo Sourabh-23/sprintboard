@@ -1,0 +1,20 @@
+{
+  "name": "sprintboard-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Run the SprintBoard backend and frontend from one command.",
+  "scripts": {
+    "setup": "npm install --prefix sprintboard_BE && npm install --prefix sprintboard-fe",
+    "dev": "concurrently --kill-others-on-fail --names BE,FE --prefix-colors cyan,green \"npm run dev:be\" \"npm run dev:fe\"",
+    "dev:be": "npm run dev --prefix sprintboard_BE",
+    "dev:fe": "npm start --prefix sprintboard-fe",
+    "build": "npm run build --prefix sprintboard-fe",
+    "test": "npm test --prefix sprintboard-fe -- --watchAll=false"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
