@@ -1,13 +1,7 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
 
-function ProtectedRoute({ children }) {
-  const accessToken = localStorage.getItem('accessToken');
-
-  if (!accessToken) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
+export default function ProtectedRoute() {
+  const { user } = useApp();
+  return user && localStorage.getItem('accessToken') ? <Outlet /> : <Navigate to="/login" replace />;
 }
-
-export default ProtectedRoute;
